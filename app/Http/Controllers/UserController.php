@@ -12,14 +12,23 @@ class UserController extends Controller
 
        $user = UserModel::firstOrNew(
         [
-            'username' => 'manager33',
-            'nama' => 'Manager Tiga Tiga',
+            'username' => 'manager55',
+            'nama' => 'Manager55',
             'password' => Hash::make('12345'),
             'level_id' => 2
         ],
        );
-       $user->save();
+       $user->username = 'manager56';
+
+       $user->isDirty(); // true
+       $user->isDirty('username'); // true
+       $user->isDirty('name'); // false
+       $user->isDirty(['nama', 'username']); // false
         
-        return view('user', ['data' => $user]);
+       $user->save();
+
+       $user->isDirty(); // false
+       $user->isDirty(); // true
+       dd($user->isDirty());
     }
 }
