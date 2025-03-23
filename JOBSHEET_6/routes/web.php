@@ -37,6 +37,8 @@ Route::group(['prefix' => 'user'], function () {
     Route::get('/{id}', [UserController::class, 'show']);         // menampilkan detail user
     Route::get('/{id}/edit', [UserController::class, 'edit']);    // menampilkan halaman form edit user
     Route::put('/{id}', [UserController::class, 'update']);      // menyimpan perubahan data user
+    Route::get('/{id}/edit_ajax', [UserController::class, 'edit_ajax']); // menampilkan halaman form edit user ajax
+    Route::put('/{id}/update_ajax', [UserController::class, 'update_ajax']);  // menyimpan perubahan data user Ajax
     Route::delete('/{id}', [UserController::class, 'destroy']);   // menghapus data user
 });
 
@@ -93,11 +95,11 @@ Route::group(['prefix'=>'stok'],function(){
     Route::delete('/{id}',[StokController::class,'destroy']);
 });
 
-Route::group(['prefix'=>'penjualan'],function(){
-    Route::get('/',[penjualanController::class,'index']);
-    Route::post('/list',[penjualanController::class,'list']);
-    Route::post('/',[penjualanController::class,'store']);
-    Route::get('/{id}',[penjualanController::class,'show']);
-    Route::delete('/{id}',[penjualanController::class,'destroy']);
-    Route::get('/{id}/edit', [penjualanController::class,'edit']);
-});
+// Route::group(['prefix'=>'penjualan'],function(){
+//     Route::get('/',[penjualanController::class,'index']);
+//     Route::post('/list',[penjualanController::class,'list']);
+//     Route::post('/',[penjualanController::class,'store']);
+//     Route::get('/{id}',[penjualanController::class,'show']);
+//     Route::delete('/{id}',[penjualanController::class,'destroy']);
+//     Route::get('/{id}/edit', [penjualanController::class,'edit']);
+// });
