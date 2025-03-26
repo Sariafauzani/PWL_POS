@@ -12,9 +12,9 @@
                   <div class="form-group row">
                       <label class="col-1 control-label col-form-label">ID Supplier</label>
                       <div class="col-11">
-                          <input type="text" class="form-control" id="Kategoir_ID" name="supplier_ID"
-                              value="{{ old('supplier_ID') }}" required>
-                          @error('supplier_ID')
+                          <input type="text" class="form-control" id="Kategori_id" name="supplier_id"
+                              value="{{ old('supplier_id') }}" required>
+                          @error('supplier_id')
                               <small class="form-text text-danger">{{ $message }}</small>
                           @enderror
                       </div>
