@@ -18,7 +18,7 @@ Route::post('login', [AuthController::class, 'postlogin']);
 Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 
 Route::middleware(['auth'])->group(function(){ // artinya semua route di dalam group ini harus login dulu
-    // masukan semua route yang perlu authentikasi di sini
+// masukan semua route yang perlu authentikasi di sini
 
 Route::get('/', function () {
     return view('welcome');
@@ -54,25 +54,27 @@ Route::group(['prefix' => 'user'], function () {
     Route::delete('/{id}/delete_ajax', [UserController::class, 'delete_ajax']); // untuk menghapus data user Ajax
     Route::delete('/{id}', [UserController::class, 'destroy']);   // menghapus data user
 });
-// artinya semua route di dalam group ini harus punya role ADM (Administrator)
-Route::middleware(['authorize:ADM'])->group(function(){
-    Route::get('/',[LevelController::class,'index'])->name('level.index');
-    Route::post('/list',[LevelController::class,'list'])->name('level.list');
-    Route::get('/create',[LevelController::class,'create'])->name('level.create');
-    Route::get('/create_ajax', [LevelController::class, 'create_ajax']); // menampilkan halaman form tambah level ajax
-    Route::get('/{id}',[LevelController::class,'show']);
-    Route::get('/{id}/show_ajax', [LevelController::class, 'show_ajax']); // menampilkan detail level
-    Route::post('/',[LevelController::class,'store']);
-    Route::post('/ajax', [LevelController::class, 'store_ajax']);        // menyimpan data level baru ajax
-    Route::get('/{id}/edit', [LevelController::class,'edit'])->name('level.edit');
-    Route::put('/{id}', [LevelController::class,'update']);
-    Route::get('/{id}/edit_ajax', [LevelController::class, 'edit_ajax']); // menampilkan halaman form edit Level Ajax
-    Route::put('/{id}/update_ajax', [LevelController::class, 'update_ajax']);  // menyimpan perubahan data Level Ajax
-    Route::get('/{id}/delete_ajax', [LevelController::class, 'confirm_ajax']); // untuk tampilkan form confirm  delete Level Ajax
-    Route::delete('/{id}/delete_ajax', [LevelController::class, 'delete_ajax']); // untuk menghapus data Level Ajax
-    Route::delete('/{id}',[LevelController::class,'destroy']);
 
-});
+    // artinya semua route di dalam group ini harus punya role ADM (Administrator)
+    Route::group(['prefix' => 'level'], function () {
+        Route::middleware(['authorize:ADM'])->group(function () {
+            Route::get('/', [LevelController::class, 'index'])->name('level.index');
+            Route::post('/list', [LevelController::class, 'list'])->name('level.list');
+            Route::get('/create', [LevelController::class, 'create'])->name('level.create');
+            Route::get('/create_ajax', [LevelController::class, 'create_ajax']); // menampilkan halaman form tambah level ajax
+            Route::get('/{id}', [LevelController::class, 'show']);
+            Route::get('/{id}/show_ajax', [LevelController::class, 'show_ajax']); // menampilkan detail level
+            Route::post('/', [LevelController::class, 'store']);
+            Route::post('/ajax', [LevelController::class, 'store_ajax']);        // menyimpan data level baru ajax
+            Route::get('/{id}/edit', [LevelController::class, 'edit'])->name('level.edit');
+            Route::put('/{id}', [LevelController::class, 'update']);
+            Route::get('/{id}/edit_ajax', [LevelController::class, 'edit_ajax']); // menampilkan halaman form edit Level Ajax
+            Route::put('/{id}/update_ajax', [LevelController::class, 'update_ajax']);  // menyimpan perubahan data Level Ajax
+            Route::get('/{id}/delete_ajax', [LevelController::class, 'confirm_ajax']); // untuk tampilkan form confirm  delete Level Ajax
+            Route::delete('/{id}/delete_ajax', [LevelController::class, 'delete_ajax']); // untuk menghapus data Level Ajax
+            Route::delete('/{id}', [LevelController::class, 'destroy']);
+        });
+    });
 
 Route::group(['prefix'=>'kategori'],function(){
     Route::get('/',[KategoriController::class,'index'])->name('kategori.index');
@@ -137,6 +139,15 @@ Route::group(['prefix'=>'stok'],function(){
     Route::delete('/{id}/delete_ajax', [StokController::class, 'delete_ajax']); // untuk menghapus data Stok Ajax
     Route::delete('/{id}',[StokController::class,'destroy']);
 });
+
+// Route::group(['prefix'=>'penjualan'],function(){
+//     Route::get('/',[penjualanController::class,'index']);
+//     Route::post('/list',[penjualanController::class,'list']);
+//     Route::post('/',[penjualanController::class,'store']);
+//     Route::get('/{id}',[penjualanController::class,'show']);
+//     Route::delete('/{id}',[penjualanController::class,'destroy']);
+//     Route::get('/{id}/edit', [penjualanController::class,'edit']);
+// });
 
 
 });
