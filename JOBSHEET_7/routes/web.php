@@ -3,12 +3,22 @@
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\LevelController;
 use App\Http\Controllers\KategoriController;
-//use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+
+// Jobsheet 7
+Route::pattern('id', '[0-9]+'); // artinya ketika ada paramete {id}, maka harus berupa angka
+
+Route::get('login', [AuthController::class, 'login'])->name('login');
+Route::post('login', [AuthController::class, 'postlogin']);
+Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
+
+Route::middleware(['auth'])->group(function(){ // artinya semua route di dalam group ini harus login dulu
+    // masukan semua route yang perlu authentikasi di sini
 
 Route::get('/', function () {
     return view('welcome');
@@ -128,11 +138,5 @@ Route::group(['prefix'=>'stok'],function(){
     Route::delete('/{id}',[StokController::class,'destroy']);
 });
 
-// Route::group(['prefix'=>'penjualan'],function(){
-//     Route::get('/',[penjualanController::class,'index']);
-//     Route::post('/list',[penjualanController::class,'list']);
-//     Route::post('/',[penjualanController::class,'store']);
-//     Route::get('/{id}',[penjualanController::class,'show']);
-//     Route::delete('/{id}',[penjualanController::class,'destroy']);
-//     Route::get('/{id}/edit', [penjualanController::class,'edit']);
-// });
+
+});
