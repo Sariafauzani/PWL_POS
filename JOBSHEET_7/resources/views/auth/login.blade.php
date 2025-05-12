@@ -64,6 +64,13 @@
                         </div>
                         <!-- /.col -->
                     </div>
+                    <!-- Tambahan untuk teks Registrasi -->
+                    <div class="row mt-2">
+                        <div class="col-12 text-center">
+                            <span>Don't have an account?</span>
+                            <a href="{{ route('register') }}"> Register</a>
+                        </div>
+                    </div>
                 </form>
             </div>
             <!-- /.card-body -->
