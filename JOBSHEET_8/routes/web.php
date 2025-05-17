@@ -23,20 +23,6 @@ Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 Route::middleware(['auth'])->group(function () { // artinya semua route di dalam group ini harus login dulu
     // masukan semua route yang perlu authentikasi di sini
 
-    Route::get('/', function () {
-        return view('welcome');
-    });
-
-    Route::get('/level', [LevelController::class, 'index']);
-    Route::get('/kategori', [KategoriController::class, 'index']);
-    Route::get('/user', [UserController::class, 'index']);
-
-    Route::get('/user/tambah', [UserController::class, 'tambah']);
-    Route::post('/user/tambah_simpan', [UserController::class, 'tambah_simpan']);
-    Route::get('/user/ubah/{id}', [UserController::class, 'ubah']);
-    Route::put('/user/ubah_simpan/{id}', [UserController::class, 'ubah_simpan']);
-    Route::get('/user/hapus/{id}', [UserController::class, 'hapus']);
-
     // Jobsheet 5
     Route::get('/', [WelcomeController::class, 'index']);
 
@@ -103,20 +89,30 @@ Route::middleware(['auth'])->group(function () { // artinya semua route di dalam
 
     // artinya semua route di dalam group ini harus punya role ADM (Administrator), MNG (Manager), dan STF (Staff)
     Route::middleware(['authorize:ADM,MNG,STF'])->group(function () {
-        Route::group(['prefix' => 'barang'], function () {
-            Route::get('/', [BarangController::class, 'index']);
-            Route::post('/list', [BarangController::class, 'list']);
-            Route::get('/create', [BarangController::class, 'create']);
-            Route::get('/create_ajax', [BarangController::class, 'create_ajax']); // menampilkan halaman form tambah Barang ajax
-            Route::post('/', [BarangController::class, 'store']);
-            Route::post('/ajax', [BarangController::class, 'store_ajax']);        // menyimpan data Barang baru ajax
-            Route::get('/{id}/edit', [BarangController::class, 'edit']);
-            Route::put('/{id}', [BarangController::class, 'update']);
-            Route::get('/{id}/edit_ajax', [BarangController::class, 'edit_ajax']); // menampilkan halaman form edit Barang Ajax
-            Route::put('/{id}/update_ajax', [BarangController::class, 'update_ajax']);  // menyimpan perubahan data Barang Ajax
-            Route::get('/{id}/delete_ajax', [BarangController::class, 'confirm_ajax']); // untuk tampilkan form confirm  delete Barang Ajax
-            Route::delete('/{id}/delete_ajax', [BarangController::class, 'delete_ajax']); // untuk menghapus data Barang Ajax
-            Route::delete('/{id}', [BarangController::class, 'destroy']);
+        //Route::group(['prefix' => 'barang'], function () {
+            // Route::get('/', [BarangController::class, 'index']);
+            // Route::post('/list', [BarangController::class, 'list']);
+            // Route::get('/create', [BarangController::class, 'create']);
+            // Route::get('/create_ajax', [BarangController::class, 'create_ajax']); // menampilkan halaman form tambah Barang ajax
+            // Route::post('/', [BarangController::class, 'store']);
+            // Route::post('/ajax', [BarangController::class, 'store_ajax']);        // menyimpan data Barang baru ajax
+            // Route::get('/{id}/edit_ajax', [BarangController::class, 'edit_ajax']); // menampilkan halaman form edit Barang Ajax
+            // Route::put('/{id}/update_ajax', [BarangController::class, 'update_ajax']);  // menyimpan perubahan data Barang Ajax
+            // Route::get('/{id}/delete_ajax', [BarangController::class, 'confirm_ajax']); // untuk tampilkan form confirm  delete Barang Ajax
+            // Route::delete('/{id}/delete_ajax', [BarangController::class, 'delete_ajax']); // untuk menghapus data Barang Ajax
+            // Route::get('/import', [BarangController::class, 'import']); // ajax form upload excel
+            // Route::post('/import_ajax', [BarangController::class, 'import_ajax']); // ajax import excel
+            // Route::delete('/{id}', [BarangController::class, 'destroy']);
+        Route::get('/barang', [BarangController::class, 'index']);
+        Route::post('/barang/list', [BarangController::class, 'list']);
+        Route::get('/barang/create_ajax', [BarangController::class, 'create_ajax']); // ajax form create
+        Route::post('/barang_ajax', [BarangController::class, 'store_ajax']); // ajax store
+        Route::get('/barang/{id}/edit_ajax', [BarangController::class, 'edit_ajax']); // ajax form edit
+        Route::put('/barang/{id}/update_ajax', [BarangController::class, 'update_ajax']); // ajax update
+        Route::get('/barang/{id}/delete_ajax', [BarangController::class, 'confirm_ajax']); // ajax form confirm
+        Route::delete('/barang/{id}/delete_ajax', [BarangController::class, 'delete_ajax']); // ajax delete       
+        Route::get('/barang/import', [BarangController::class, 'import']); // ajax form upload excel
+        Route::post('/barang/import_ajax', [BarangController::class, 'import_ajax']); // ajax import excel
         });
     });
 
@@ -155,14 +151,4 @@ Route::middleware(['auth'])->group(function () { // artinya semua route di dalam
         Route::delete('/{id}', [StokController::class, 'destroy']);
     });
 
-    // Route::group(['prefix'=>'penjualan'],function(){
-    //     Route::get('/',[penjualanController::class,'index']);
-    //     Route::post('/list',[penjualanController::class,'list']);
-    //     Route::post('/',[penjualanController::class,'store']);
-    //     Route::get('/{id}',[penjualanController::class,'show']);
-    //     Route::delete('/{id}',[penjualanController::class,'destroy']);
-    //     Route::get('/{id}/edit', [penjualanController::class,'edit']);
-    // });
 
-
-});
