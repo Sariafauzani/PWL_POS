@@ -11,6 +11,7 @@ use App\Models\UserModel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class UserController extends Controller
 {
@@ -415,4 +416,19 @@ class UserController extends Controller
         $writer->save('php://output');
         exit;
     } // end function export_excel
+
+    public function export_pdf()
+    {
+        $users = UserModel::select('user_id', 'username', 'nama', 'level_id')
+                    ->with('level')            
+                    ->get();
+
+        // use Barryvdh\DomPDF\Facade\Pdf
+        $pdf = Pdf::loadView('user.export_pdf', ['users' => $users]);
+        $pdf->setPaper('a4', 'portrait'); // set ukuran kertas dan orientasi
+        $pdf->setOption("isRemoteEnabled", true); // set true jika ada gambar dari url
+        $pdf->render();
+
+        return $pdf->stream('Data_User_' . date('Y-m-d_H-i-s') . '.pdf');
+    }
 }

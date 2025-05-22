@@ -5,11 +5,10 @@
         <div class="card-header">
             <h3 class="card-title">Daftar Data Supplier</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('/supplier/import') }}')" class="btn btn-info">Import Data
-                    Supplier</button>
-                    <a href="{{ url('/supplier/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i>Export Supplier</a>
-                <button onclick="modalAction('{{ url('/supplier/create_ajax') }}')" class="btn btn-success">Tambah Data
-                    (Ajax)</button>
+                <button onclick="modalAction('{{ url('/supplier/import') }}')" class="btn btn-info">Import Data Supplier</button>
+                <a href="{{ url('/supplier/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i>Export Supplier</a>
+                <a href="{{ url('/supplier/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export Supplier</a>
+                <button onclick="modalAction('{{ url('/supplier/create_ajax') }}')" class="btn btn-success">Tambah Data (Ajax)</button>
             </div>
         </div>
         <div class="card-body">

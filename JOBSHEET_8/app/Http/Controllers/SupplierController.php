@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yajra\DataTables\Facades\DataTables;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SupplierController extends Controller
 {
@@ -375,4 +376,17 @@ class SupplierController extends Controller
         $writer->save('php://output');
         exit;
     } // end function export_excel
+
+    public function export_pdf()
+    {
+        $suppliers = SupplierModel::select('supplier_kode', 'supplier_nama', 'supplier_alamat')->get();
+
+        // use Barryvdh\DomPDF\Facade\Pdf
+        $pdf = Pdf::loadView('supplier.export_pdf', ['suppliers' => $suppliers]);
+        $pdf->setPaper('a4', 'portrait'); // set ukuran kertas dan orientasi
+        $pdf->setOption("isRemoteEnabled", true); // set true jika ada gambar dari url
+        $pdf->render();
+
+        return $pdf->stream('Data_Supplier_' . date('Y-m-d_H-i-s') . '.pdf');
+    }
 }

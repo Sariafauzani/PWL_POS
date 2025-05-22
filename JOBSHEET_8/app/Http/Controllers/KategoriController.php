@@ -11,6 +11,7 @@ use App\Models\KategoriModel;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Barryvdh\DomPDF\Facade\Pdf;
 
   class KategoriController extends Controller
 {
@@ -355,4 +356,17 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
             $writer->save('php://output');
             exit;
         } // end function export_excel
+
+        public function export_pdf()
+        {
+            $kategoris = KategoriModel::select('kategori_kode', 'kategori_nama')->get();
+    
+            // use Barryvdh\DomPDF\Facade\Pdf
+            $pdf = Pdf::loadView('kategori.export_pdf', ['kategoris' => $kategoris]);
+            $pdf->setPaper('a4', 'portrait'); // set ukuran kertas dan orientasi
+            $pdf->setOption("isRemoteEnabled", true); // set true jika ada gambar dari url
+            $pdf->render();
+    
+            return $pdf->stream('Data_Kategori_' . date('Y-m-d_H-i-s') . '.pdf');
+        }
     }
