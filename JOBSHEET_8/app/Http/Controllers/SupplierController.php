@@ -333,4 +333,46 @@ class SupplierController extends Controller
         }
         return redirect('/');
     }
+
+    public function export_excel() {
+        // ambil data supplier yang akan di export
+        $supplier = SupplierModel::select('supplier_kode', 'supplier_nama', 'supplier_alamat')
+                    ->get();
+
+        // load library excel
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();  // ambil sheet yang aktif
+
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Kode Supplier');
+        $sheet->setCellValue('C1', 'Nama Supplier');
+        $sheet->setCellValue('D1', 'Alamat Supplier');
+
+        $sheet->getStyle('A1:D1')->getFont()->setBold(true);  // bold header
+
+        $no = 1;        // nomor data dimulai dari 1
+        $baris = 2;     // baris data dimulai dari baris ke 2
+        foreach ($supplier as $item) {
+            $sheet->setCellValue('A'.$baris, $no);
+            $sheet->setCellValue('B'.$baris, $item->supplier_kode);
+            $sheet->setCellValue('C'.$baris, $item->supplier_nama);
+            $sheet->setCellValue('D'.$baris, $item->supplier_alamat);
+            $baris++;
+            $no++;
+        }
+        
+        foreach(range('A','D') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true); // set auto size untuk kolom
+        }
+
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $filename = 'Data Supplier '.date('Y-m-d H:i:s').'.xlsx';
+
+        header('Conrent-Type: application/vnd,openxmlformats-officedocument.spreadsheet.sheet');
+        header('Content-Disposition: attachment;filename="'.$filename.'"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
+    } // end function export_excel
 }

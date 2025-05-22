@@ -380,4 +380,40 @@ class LevelController extends Controller
         }
         return redirect('/');
     }
+
+    public function export_excel() {
+        // ambil data level yang akan di export
+        $levels = LevelModel::select('level_kode', 'level_nama')
+                    ->get();
+
+        // load library excel
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();  // ambil sheet yang aktif
+
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Kode Level');
+        $sheet->setCellValue('C1', 'Nama Level');
+
+        $sheet->getStyle('A1:C1')->getFont()->setBold(true);  // bold header
+
+        $no = 1;        // nomor data dimulai dari 1
+        $baris = 2;     // baris data dimulai dari baris ke 2
+        foreach ($levels as $level) {
+            $sheet->setCellValue('A'.$baris, $no);
+            $sheet->setCellValue('B'.$baris, $level->level_kode);
+            $sheet->setCellValue('C'.$baris, $level->level_nama);
+            $baris++;
+            $no++;
+        }
+        
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $filename = 'Data Level '.date('Y-m-d H:i:s').'.xlsx';
+
+        header('Conrent-Type: application/vnd,openxmlformats-officedocument.spreadsheet.sheet');
+        header('Content-Disposition: attachment;filename="'.$filename.'"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
+    } // end function export_excel
 }
