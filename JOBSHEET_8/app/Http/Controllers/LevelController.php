@@ -7,13 +7,14 @@ use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
 use App\Models\LevelModel;
 use Illuminate\Support\Facades\Validator;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yajra\DataTables\Facades\DataTables;
 
 class LevelController extends Controller
 {
-    
     // Menampilkan halaman daftar level.
-    public function index(): View {
+    public function index(): View
+    {
         $breadcrumb = (object)[
             'title' => 'Daftar Level',
             'list'  => ['Home', 'Level']
@@ -26,32 +27,35 @@ class LevelController extends Controller
         $activeMenu = 'level';
         // Ambil semua data level, bisa digunakan di view jika diperlukan.
         $level = LevelModel::all();
-        
+
         return view('level.index', compact('breadcrumb', 'page', 'level', 'activeMenu'));
     }
 
     //  Mengambil data level untuk DataTables.
-    public function list(Request $request)
-    {
-        // Query tanpa ->get() agar mendukung server-side processing DataTables
+    public function list(Request $request) {
         $levels = LevelModel::select('level_id', 'level_kode', 'level_nama');
-
+    
+        // Tambahkan logika filter jika filter_level tidak kosong
+        if (!empty($request->filter_level)) {
+            $levels->where('level_id', $request->filter_level);
+        }
+    
         return DataTables::of($levels)
             ->addIndexColumn()
-            ->addColumn('aksi', function($level) {
-                
-                 $btn  = '<button onclick="modalAction(\''.url('/level/' . $level->level_id . '/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button> '; 
-                 $btn .= '<button onclick="modalAction(\''.url('/level/' . $level->level_id . '/edit_ajax').'\')" class="btn btn-warning btn-sm">Edit</button> '; 
-                 $btn .= '<button onclick="modalAction(\''.url('/level/' . $level->level_id . '/delete_ajax').'\')"  class="btn btn-danger btn-sm">Hapus</button> '; 
-                
+            ->addColumn('aksi', function ($level) {
+                $btn  = '<button onclick="modalAction(\'' . url('/level/' . $level->level_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/level/' . $level->level_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/level/' . $level->level_id . '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi'])
             ->make(true);
-    } 
+    }
+    
 
     //  Menampilkan detail level.
-    public function show(string $id): View {
+    public function show(string $id): View
+    {
         $level = LevelModel::findOrFail($id);
 
         $breadcrumb = (object)[
@@ -69,7 +73,8 @@ class LevelController extends Controller
     }
 
     // Menampilkan form untuk menambahkan level baru.
-    public function create(): View {
+    public function create(): View
+    {
         $breadcrumb = (object)[
             'title' => 'Tambah Level',
             'list'  => ['Home', 'Level']
@@ -87,7 +92,8 @@ class LevelController extends Controller
     }
 
     //   Menyimpan data level baru.
-    public function store(Request $request): RedirectResponse {
+    public function store(Request $request): RedirectResponse
+    {
         $validatedData = $request->validate([
             'level_id'   => 'required|int',
             'level_nama' => 'required|string',
@@ -105,7 +111,8 @@ class LevelController extends Controller
     }
 
     // Menampilkan form edit level.
-    public function edit($id): View {
+    public function edit($id): View
+    {
         $level = LevelModel::findOrFail($id);
 
         $breadcrumb = (object)[
@@ -123,7 +130,8 @@ class LevelController extends Controller
     }
 
     //  Memperbarui data level.
-    public function update(Request $request, $id): RedirectResponse {
+    public function update(Request $request, $id): RedirectResponse
+    {
         $validated = $request->validate([
             'level_id'   => 'required',
             'level_nama' => 'required|string',
@@ -137,7 +145,8 @@ class LevelController extends Controller
     }
 
     //  Menghapus data level.
-    public function destroy($id): RedirectResponse {
+    public function destroy($id): RedirectResponse
+    {
         $level = LevelModel::findOrFail($id);
         $level->delete();
 
@@ -286,25 +295,25 @@ class LevelController extends Controller
     public function show_ajax(string $id)
     {
         $level = LevelModel::find($id);
-    
+
         if (!$level) {
             return response()->json([
                 'status' => false,
                 'message' => 'Data tidak ditemukan'
             ], 404);
         }
-    
+
         $breadcrumb = (object)[
             'title' => 'Detail Level',
             'list'  => ['Home', 'Level', 'Detail']
         ];
-    
+
         $page = (object)[
             'title' => 'Detail Level'
         ];
-    
+
         $activeMenu = 'level';
-    
+
         return response()->json([
             'status' => true,
             'breadcrumb' => $breadcrumb,
@@ -313,5 +322,62 @@ class LevelController extends Controller
             'activeMenu' => $activeMenu
         ]);
     }
-    
+
+    public function import()
+    {
+        return view('level.import');
+    }
+
+    public function import_ajax(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'file_level' => ['required', 'mimes:xlsx', 'max:1024'], // validasi file
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            $file = $request->file('file_level');
+            $reader = IOFactory::createReader('Xlsx');
+            $reader->setReadDataOnly(true);
+            $spreadsheet = $reader->load($file->getRealPath());
+            $sheet = $spreadsheet->getActiveSheet();
+            $data = $sheet->toArray(null, false, true, true);
+
+            $insert = [];
+            if (count($data) > 1) {
+                foreach ($data as $baris => $value) {
+                    if ($baris > 1) {
+                        $insert[] = [
+                            'level_kode' => $value['A'],
+                            'level_nama' => $value['B'],
+                            'created_at' => now(),
+                        ];
+                    }
+                }
+
+                if (count($insert) > 0) {
+                    LevelModel::insertOrIgnore($insert);
+                }
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil diimport',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Tidak ada data yang diimport',
+                ]);
+            }
+        }
+        return redirect('/');
+    }
 }
