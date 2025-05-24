@@ -26,6 +26,9 @@ Route::middleware(['auth'])->group(function () { // artinya semua route di dalam
     // Jobsheet 5
     Route::get('/', [WelcomeController::class, 'index']);
 
+    Route::get('/profile', [UserController::class, 'profile']);
+    Route::post('/user/update-photo', [UserController::class, 'updatePhoto']);
+
     // artinya semua route di dalam group ini harus punya role ADM (Administrator), MNG (Manager), dan STF (Staff)
     Route::middleware(['authorize:ADM,MNG,STF'])->group(function () {
         Route::group(['prefix' => 'user'], function () {
