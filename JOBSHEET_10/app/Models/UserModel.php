@@ -10,7 +10,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable; // implementasi class Au
 
 class UserModel extends Authenticatable
 {
-    use HasFactory;
+    //use HasFactory;
+    public function getJWTIdentifier(){
+        return $this->getKey();
+    }
+
+    public function getJWTCustomeClaims(){
+        return [];
+    }
 
     protected $table = 'm_user'; // Mendefinisikan nama tabel yang digunakan oleh model ini
     protected $primaryKey = 'user_id'; // Mendefinisikan primary key dari tabel yang digunakan
