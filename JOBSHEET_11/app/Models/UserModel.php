@@ -2,16 +2,17 @@
 
 namespace App\Models;
 
+use Attribute as GlobalAttribute;
 use Illuminate\Auth\Events\Authenticated;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable; // implementasi class Autheticatable
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
 
 class UserModel extends Authenticatable implements JWTSubject
-
-//class UserModel extends Authenticatable
 {
     //use HasFactory;
     public function getJWTIdentifier(){
@@ -39,6 +40,13 @@ class UserModel extends Authenticatable implements JWTSubject
     */
     public function level(): BelongsTo {
         return $this->belongsTo(LevelModel::class, 'level_id', 'level_id');
+    }
+
+    protected function profilePhoto(): Attribute
+    {
+        return Attribute::make(
+            get: fn($profile_photo) => url('/storage/posts/' .$profile_photo),
+        );
     }
 
     /**

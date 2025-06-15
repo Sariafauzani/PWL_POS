@@ -17,7 +17,7 @@ class RegisterController extends Controller
             'nama'     => 'required',
             'password' => 'required|min:5|confirmed',
             'level_id' => 'required',
-            'profile_photo' => '', // atau null
+            'profile_photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         // if validation fails
@@ -25,12 +25,17 @@ class RegisterController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        // Upload file
+        $profile_photo = $request->file('profile_photo');
+        $profile_photo->storeAs('public/posts', $profile_photo->hashName());
+        
         // create user
         $user = UserModel::create([
             'username' => $request->username,
             'nama'     => $request->nama,
             'password' => bcrypt($request->password),
             'level_id' => $request->level_id,
+            'profile_photo' => $profile_photo->hashName(),
         ]);
         
         // return response JSON user is created
