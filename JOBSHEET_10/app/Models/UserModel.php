@@ -7,15 +7,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable; // implementasi class Autheticatable
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class UserModel extends Authenticatable
+class UserModel extends Authenticatable implements JWTSubject
+
+//class UserModel extends Authenticatable
 {
     //use HasFactory;
     public function getJWTIdentifier(){
         return $this->getKey();
     }
 
-    public function getJWTCustomeClaims(){
+    public function getJWTCustomClaims(){
         return [];
     }
 
